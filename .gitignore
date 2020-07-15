@@ -9,6 +9,8 @@ compile_commands.json
 moc_*
 *.moc
 
+build
+
 genesis.json
 hardfork.hpp
 

@@ -24,6 +24,7 @@
 #pragma once
 
 #include <graphene/protocol/types.hpp>
+#include <graphene/chain/multi_index_types.hpp>
 
 namespace graphene { namespace chain { using namespace protocol; } }
 
