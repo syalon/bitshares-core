@@ -56,12 +56,13 @@ namespace graphene { namespace chain {
    using balance_multi_index_type = multi_index_container<
       balance_object,
       indexed_by<
-         ordered_unique< tag<by_id>, member< object, object_id_type, &object::id > >,
-         ordered_non_unique< tag<by_owner>, composite_key<
-            balance_object,
-            member<balance_object, address, &balance_object::owner>,
-            const_mem_fun<balance_object, asset_id_type, &balance_object::asset_type>
-         > >
+         ordered_unique< tag<by_id>, member< object, object_id_type, &object::id > >
+         // TODO:syalon non unique key
+         // ordered_non_unique< tag<by_owner>, composite_key<
+         //    balance_object,
+         //    member<balance_object, address, &balance_object::owner>,
+         //    const_mem_fun<balance_object, asset_id_type, &balance_object::asset_type>
+         // > >
       >
    >;
 

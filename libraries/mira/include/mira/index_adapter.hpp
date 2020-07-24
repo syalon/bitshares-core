@@ -178,7 +178,7 @@ struct multi_index_adapter
    typedef typename mira_type::primary_iterator                                                          mira_iter_type;
    typedef typename index_converter< multi_index::multi_index_container< Arg1, Arg2, Arg3 > >::bmic_type bmic_type;
    typedef typename bmic_type::iterator                                                                  bmic_iter_type;
-   typedef typename value_type::id_type id_type;
+   typedef typename value_type::id_type                                                                  id_type;
 
    typedef iterator_adapter<
       value_type,

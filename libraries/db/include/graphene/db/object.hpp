@@ -65,6 +65,9 @@ namespace graphene { namespace db {
          object(){}
          virtual ~object(){}
 
+          //  TODO:syalon
+         typedef object_id_type   id_type;
+
          // serialized
          object_id_type          id;
 

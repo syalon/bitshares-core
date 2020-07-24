@@ -364,16 +364,18 @@ namespace graphene { namespace chain {
       asset_bitasset_data_object,
       indexed_by<
          ordered_unique< tag<by_id>, member< object, object_id_type, &object::id > >,
-         ordered_non_unique< tag<by_short_backing_asset>, bitasset_short_backing_asset_extractor >,
+         // TODO:syalon non unique key
+         // ordered_non_unique< tag<by_short_backing_asset>, bitasset_short_backing_asset_extractor >,
          ordered_unique< tag<by_feed_expiration>,
             composite_key< asset_bitasset_data_object,
                const_mem_fun< asset_bitasset_data_object, time_point_sec, &asset_bitasset_data_object::feed_expiration_time >,
                member< asset_bitasset_data_object, asset_id_type, &asset_bitasset_data_object::asset_id >
             >
-         >,
-         ordered_non_unique< tag<by_cer_update>,
-                             const_mem_fun< asset_bitasset_data_object, bool, &asset_bitasset_data_object::need_to_update_cer >
          >
+         // TODO:syalon non unique key
+         // ordered_non_unique< tag<by_cer_update>,
+         //                     const_mem_fun< asset_bitasset_data_object, bool, &asset_bitasset_data_object::need_to_update_cer >
+         // >
       >
    > asset_bitasset_data_object_multi_index_type;
    typedef generic_index<asset_bitasset_data_object, asset_bitasset_data_object_multi_index_type> asset_bitasset_data_index;

@@ -34,8 +34,8 @@
 
 namespace graphene { namespace chain {
    using namespace graphene::db;
-   using boost::multi_index_container;
-   using namespace boost::multi_index;
+   // using boost::multi_index_container;
+   // using namespace boost::multi_index;
    /**
     * The purpose of this object is to enable the detection of duplicate transactions. When a transaction is included
     * in a block a transaction_history_object is added. At the end of block processing all transaction_history_objects that
@@ -59,10 +59,11 @@ namespace graphene { namespace chain {
       transaction_history_object,
       indexed_by<
          ordered_unique< tag<by_id>, member< object, object_id_type, &object::id > >,
-         hashed_unique< tag<by_trx_id>, BOOST_MULTI_INDEX_MEMBER(transaction_history_object, transaction_id_type, trx_id),
-                        std::hash<transaction_id_type> >,
-         ordered_non_unique< tag<by_expiration>, const_mem_fun< transaction_history_object, time_point_sec,
-                                                                &transaction_history_object::get_expiration > >
+         // TODO:syalon hashed_unique to ordered_unique
+         ordered_unique< tag<by_trx_id>, member< transaction_history_object, transaction_id_type, &transaction_history_object::trx_id> >
+                        // TODO:syalon non unique key
+         // ordered_non_unique< tag<by_expiration>, const_mem_fun< transaction_history_object, time_point_sec,
+                                                                // &transaction_history_object::get_expiration > >
       >
    > transaction_multi_index_type;
 

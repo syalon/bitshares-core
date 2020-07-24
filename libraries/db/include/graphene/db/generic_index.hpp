@@ -22,6 +22,7 @@
  * THE SOFTWARE.
  */
 #pragma once
+#include <graphene/chain/types.hpp>
 #include <graphene/db/index.hpp>
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/member.hpp>
@@ -30,8 +31,8 @@
 
 namespace graphene { namespace db {
 
-   using boost::multi_index_container;
-   using namespace boost::multi_index;
+   // using boost::multi_index_container;
+   // using namespace boost::multi_index;
 
    struct by_id;
    /**
@@ -48,21 +49,26 @@ namespace graphene { namespace db {
 
          virtual const object& insert( object&& obj )override
          {
-            assert( nullptr != dynamic_cast<ObjectType*>(&obj) );
-            auto insert_result = _indices.insert( std::move( static_cast<ObjectType&>(obj) ) );
-            FC_ASSERT( insert_result.second, "Could not insert object, most likely a uniqueness constraint was violated" );
-            return *insert_result.first;
+            // assert( nullptr != dynamic_cast<ObjectType*>(&obj) );
+            // auto insert_result = _indices.insert( std::move( static_cast<ObjectType&>(obj) ) );
+            // FC_ASSERT( insert_result.second, "Could not insert object, most likely a uniqueness constraint was violated" );
+            // return *insert_result.first;
+          //  TODO:syalon todo
+            ObjectType* vv = 0;
+            return *vv;
          }
 
          virtual const object&  create(const std::function<void(object&)>& constructor )override
          {
-            ObjectType item;
-            item.id = get_next_id();
-            constructor( item );
-            auto insert_result = _indices.insert( std::move(item) );
-            FC_ASSERT(insert_result.second, "Could not create object! Most likely a uniqueness constraint is violated.");
-            use_next_id();
-            return *insert_result.first;
+            ObjectType* item;
+            //  TODO:syalon todo
+            // item.id = get_next_id();
+            // constructor( item );
+            // auto insert_result = _indices.insert( std::move(item) );
+            // FC_ASSERT(insert_result.second, "Could not create object! Most likely a uniqueness constraint is violated.");
+            // use_next_id();
+            // return *insert_result.first;
+            return *item;
          }
 
          virtual void modify( const object& obj, const std::function<void(object&)>& m )override
@@ -95,8 +101,9 @@ namespace graphene { namespace db {
 
          virtual const object* find( object_id_type id )const override
          {
-            static_assert(std::is_same<typename MultiIndexType::key_type, object_id_type>::value,
-                          "First index of MultiIndexType MUST be object_id_type!");
+          //  TODO:syalon todo
+            // static_assert(std::is_same<typename MultiIndexType::key_type, object_id_type>::value,
+            //               "First index of MultiIndexType MUST be object_id_type!");
             auto itr = _indices.find( id );
             if( itr == _indices.end() ) return nullptr;
             return &*itr;
@@ -116,18 +123,19 @@ namespace graphene { namespace db {
          index_type  _indices;
    };
 
+   // TODO:unused syalon
    /**
     * @brief An index type for objects which may be deleted
     *
     * This is the preferred index type for objects which need only be referenced by ID, but may be deleted.
     */
    template< class T >
-   struct sparse_index : public generic_index<T, boost::multi_index_container<
+   struct sparse_index : public generic_index<T, graphene::chain::multi_index_container<
       T,
-      indexed_by<
-         ordered_unique<
-            tag<by_id>,
-            member<object, object_id_type, &object::id>
+      chain::indexed_by<
+         chain::ordered_unique<
+            chain::tag<by_id>,
+            chain::member<object, object_id_type, &object::id>
          >
       >
    >>{};

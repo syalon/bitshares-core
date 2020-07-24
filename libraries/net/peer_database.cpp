@@ -28,6 +28,8 @@
 #include <boost/multi_index/mem_fun.hpp>
 #include <boost/multi_index/tag.hpp>
 
+#include <graphene/chain/types.hpp>
+
 #include <fc/io/raw.hpp>
 #include <fc/io/raw_variant.hpp>
 #include <fc/log/logger.hpp>
@@ -39,21 +41,21 @@
 namespace graphene { namespace net {
   namespace detail
   {
-    using namespace boost::multi_index;
+    // using namespace boost::multi_index;
 
     class peer_database_impl
     {
     public:
       struct last_seen_time_index {};
       struct endpoint_index {};
-      typedef boost::multi_index_container<potential_peer_record, 
-                                           indexed_by<ordered_non_unique<tag<last_seen_time_index>, 
-                                                                         member<potential_peer_record, 
+      typedef boost::multi_index::multi_index_container<potential_peer_record, 
+                                           boost::multi_index::indexed_by<boost::multi_index::ordered_non_unique<tag<last_seen_time_index>, 
+                                                                         boost::multi_index::member<potential_peer_record, 
                                                                                 fc::time_point_sec, 
                                                                                 &potential_peer_record::last_seen_time>,
                                                                          std::greater<fc::time_point_sec> >,
-                                                      hashed_unique<tag<endpoint_index>, 
-                                                                    member<potential_peer_record, 
+                                                      boost::multi_index::hashed_unique<tag<endpoint_index>, 
+                                                                    boost::multi_index::member<potential_peer_record, 
                                                                            fc::ip::endpoint, 
                                                                            &potential_peer_record::endpoint>, 
                                                                     std::hash<fc::ip::endpoint> > > > potential_peer_set;

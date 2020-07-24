@@ -41,23 +41,23 @@ static std::shared_ptr< rocksdb::Cache > global_shared_cache;
 static std::shared_ptr< rocksdb::WriteBufferManager > global_write_buffer_manager;
 
 static std::map< std::string, std::function< void( ::rocksdb::Options&, fc::variant ) > > global_database_option_map {
-   { ALLOW_MMAP_READS,                  []( ::rocksdb::Options& o, fc::variant v ) { o.allow_mmap_reads = v.as< bool >(); }                 },
-   { WRITE_BUFFER_SIZE,                 []( ::rocksdb::Options& o, fc::variant v ) { o.write_buffer_size = v.as< uint64_t >(); }            },
-   { MAX_BYTES_FOR_LEVEL_BASE,          []( ::rocksdb::Options& o, fc::variant v ) { o.max_bytes_for_level_base = v.as< uint64_t >(); }     },
-   { TARGET_FILE_SIZE_BASE,             []( ::rocksdb::Options& o, fc::variant v ) { o.target_file_size_base = v.as< uint64_t >(); }        },
-   { MAX_WRITE_BUFFER_NUMBER,           []( ::rocksdb::Options& o, fc::variant v ) { o.max_write_buffer_number = v.as< int >(); }           },
-   { MAX_BACKGROUND_COMPACTIONS,        []( ::rocksdb::Options& o, fc::variant v ) { o.max_background_compactions = v.as< int >(); }        },
-   { MAX_BACKGROUND_FLUSHES,            []( ::rocksdb::Options& o, fc::variant v ) { o.max_background_flushes = v.as< int >(); }            },
-   { MIN_WRITE_BUFFER_NUMBER_TO_MERGE,  []( ::rocksdb::Options& o, fc::variant v ) { o.min_write_buffer_number_to_merge = v.as< int >(); }  },
+   { ALLOW_MMAP_READS,                  []( ::rocksdb::Options& o, fc::variant v ) { o.allow_mmap_reads = v.as< bool >(20); }                 },
+   { WRITE_BUFFER_SIZE,                 []( ::rocksdb::Options& o, fc::variant v ) { o.write_buffer_size = v.as< uint64_t >(20); }            },
+   { MAX_BYTES_FOR_LEVEL_BASE,          []( ::rocksdb::Options& o, fc::variant v ) { o.max_bytes_for_level_base = v.as< uint64_t >(20); }     },
+   { TARGET_FILE_SIZE_BASE,             []( ::rocksdb::Options& o, fc::variant v ) { o.target_file_size_base = v.as< uint64_t >(20); }        },
+   { MAX_WRITE_BUFFER_NUMBER,           []( ::rocksdb::Options& o, fc::variant v ) { o.max_write_buffer_number = v.as< int >(20); }           },
+   { MAX_BACKGROUND_COMPACTIONS,        []( ::rocksdb::Options& o, fc::variant v ) { o.max_background_compactions = v.as< int >(20); }        },
+   { MAX_BACKGROUND_FLUSHES,            []( ::rocksdb::Options& o, fc::variant v ) { o.max_background_flushes = v.as< int >(20); }            },
+   { MIN_WRITE_BUFFER_NUMBER_TO_MERGE,  []( ::rocksdb::Options& o, fc::variant v ) { o.min_write_buffer_number_to_merge = v.as< int >(20); }  },
    { OPTIMIZE_LEVEL_STYLE_COMPACTION,   []( ::rocksdb::Options& o, fc::variant v )
       {
-         if ( v.as< bool >() )
+         if ( v.as< bool >(20) )
             o.OptimizeLevelStyleCompaction();
       }
    },
    { INCREASE_PARALLELISM, []( ::rocksdb::Options& o, fc::variant v )
       {
-         if ( v.as< bool >() )
+         if ( v.as< bool >(20) )
             o.IncreaseParallelism();
       }
    },
@@ -76,7 +76,7 @@ static std::map< std::string, std::function< void( ::rocksdb::Options&, fc::vari
             FC_ASSERT( obj[ BLOCK_SIZE ].is_uint64(), "Expected '${key}' to be an unsigned integer",
                ("key", BLOCK_SIZE) );
 
-            table_options.block_size = obj[ BLOCK_SIZE ].template as< uint64_t >();
+            table_options.block_size = obj[ BLOCK_SIZE ].template as< uint64_t >(20);
          }
 
          if ( obj.contains( CACHE_INDEX_AND_FILTER_BLOCKS ) )
@@ -84,7 +84,7 @@ static std::map< std::string, std::function< void( ::rocksdb::Options&, fc::vari
             FC_ASSERT( obj[ CACHE_INDEX_AND_FILTER_BLOCKS ].is_bool(), "Expected '${key}' to be a boolean",
                ("key", CACHE_INDEX_AND_FILTER_BLOCKS) );
 
-            table_options.cache_index_and_filter_blocks = obj[ CACHE_INDEX_AND_FILTER_BLOCKS ].template as< bool >();
+            table_options.cache_index_and_filter_blocks = obj[ CACHE_INDEX_AND_FILTER_BLOCKS ].template as< bool >(20);
          }
 
          if ( obj.contains( BLOOM_FILTER_POLICY ) )
@@ -103,14 +103,14 @@ static std::map< std::string, std::function< void( ::rocksdb::Options&, fc::vari
             FC_ASSERT( filter_policy[ BITS_PER_KEY ].is_uint64(), "Expected '${key}' to be an unsigned integer",
                ("key", BITS_PER_KEY) );
 
-            bits_per_key = filter_policy[ BITS_PER_KEY ].template as< uint64_t >();
+            bits_per_key = filter_policy[ BITS_PER_KEY ].template as< uint64_t >(20);
 
             if ( filter_policy.contains( USE_BLOCK_BASED_BUILDER ) )
             {
                FC_ASSERT( filter_policy[ USE_BLOCK_BASED_BUILDER ].is_bool(), "Expected '${key}' to be a boolean",
                   ("key", USE_BLOCK_BASED_BUILDER) );
 
-               table_options.filter_policy.reset( rocksdb::NewBloomFilterPolicy( bits_per_key, filter_policy[ USE_BLOCK_BASED_BUILDER ].template as< bool >() ) );
+               table_options.filter_policy.reset( rocksdb::NewBloomFilterPolicy( bits_per_key, filter_policy[ USE_BLOCK_BASED_BUILDER ].template as< bool >(20) ) );
             }
             else
             {
@@ -189,7 +189,7 @@ size_t configuration::get_object_count( const boost::any& cfg )
    FC_ASSERT( global_config[ OBJECT_COUNT ].is_uint64(), "Expected '${key}' to be an unsigned integer",
       ("key", OBJECT_COUNT) );
 
-   object_count = global_config[ OBJECT_COUNT ].as< uint64_t >();
+   object_count = global_config[ OBJECT_COUNT ].as< uint64_t >(20);
 
    return object_count;
 }
@@ -211,7 +211,7 @@ bool configuration::gather_statistics( const boost::any& cfg )
    FC_ASSERT( global_config[ STATISTICS ].is_bool(), "Expected '${key}' to be a boolean value",
       ("key", STATISTICS) );
 
-   statistics = global_config[ STATISTICS ].as< bool >();
+   statistics = global_config[ STATISTICS ].as< bool >(20);
 
    return statistics;
 }
@@ -247,14 +247,14 @@ bool configuration::gather_statistics( const boost::any& cfg )
       FC_ASSERT( shared_cache_obj[ CAPACITY ].is_string(), "Expected '${key}' to be a string representation of an unsigned integer",
          ("key", CAPACITY) );
 
-      capacity = shared_cache_obj[ CAPACITY ].as< uint64_t >();
+      capacity = shared_cache_obj[ CAPACITY ].as< uint64_t >(20);
 
       if ( shared_cache_obj.contains( NUM_SHARD_BITS ) )
       {
          FC_ASSERT( shared_cache_obj[ NUM_SHARD_BITS ].is_uint64(), "Expected '${key}' to be an unsigned integer",
             ("key", NUM_SHARD_BITS) );
 
-         num_shard_bits = shared_cache_obj[ NUM_SHARD_BITS ].as< int >();
+         num_shard_bits = shared_cache_obj[ NUM_SHARD_BITS ].as< int >(20);
 
          global_shared_cache = rocksdb::NewLRUCache( capacity, num_shard_bits );
       }
@@ -286,7 +286,7 @@ bool configuration::gather_statistics( const boost::any& cfg )
       FC_ASSERT( write_buffer_mgr_obj[ WRITE_BUFFER_SIZE ].is_string(), "Expected '${key}' to be a string representation of an unsigned integer",
          ("key", WRITE_BUFFER_SIZE) );
 
-      write_buf_size = write_buffer_mgr_obj[ WRITE_BUFFER_SIZE ].as< uint64_t >();
+      write_buf_size = write_buffer_mgr_obj[ WRITE_BUFFER_SIZE ].as< uint64_t >(20);
 
       global_write_buffer_manager = std::make_shared< ::rocksdb::WriteBufferManager >( write_buf_size, global_shared_cache );
    }

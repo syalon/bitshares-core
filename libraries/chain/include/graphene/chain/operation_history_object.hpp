@@ -126,10 +126,11 @@ namespace graphene { namespace chain {
                member< account_transaction_history_object, account_id_type, &account_transaction_history_object::account>,
                member< account_transaction_history_object, operation_history_id_type, &account_transaction_history_object::operation_id>
             >
-         >,
-         ordered_non_unique< tag<by_opid>,
-            member< account_transaction_history_object, operation_history_id_type, &account_transaction_history_object::operation_id>
          >
+         // TODO:syalon non unique key
+         // ordered_non_unique< tag<by_opid>,
+         //    member< account_transaction_history_object, operation_history_id_type, &account_transaction_history_object::operation_id>
+         // >
       >
    > account_transaction_history_multi_index_type;
 

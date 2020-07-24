@@ -409,11 +409,12 @@ void elasticsearch_plugin_impl::cleanObjects(const account_transaction_history_i
             obj.next = account_transaction_history_id_type();
          });
       }
+      // TODO:syalon todo
       // do the same on oho
-      const auto &by_opid_idx = his_idx.indices().get<by_opid>();
-      if (by_opid_idx.find(remove_op_id) == by_opid_idx.end()) {
-         db.remove(remove_op_id(db));
-      }
+      // const auto &by_opid_idx = his_idx.indices().get<by_opid>();
+      // if (by_opid_idx.find(remove_op_id) == by_opid_idx.end()) {
+      //    db.remove(remove_op_id(db));
+      // }
    }
 }
 

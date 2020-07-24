@@ -26,6 +26,7 @@
 #include <graphene/protocol/types.hpp>
 #include <graphene/protocol/transaction.hpp>
 #include <graphene/db/generic_index.hpp>
+#include <graphene/chain/types.hpp>
 
 #include <boost/multi_index/composite_key.hpp>
 
@@ -87,7 +88,7 @@ class required_approval_index : public secondary_index
 };
 
 struct by_expiration{};
-typedef boost::multi_index_container<
+typedef multi_index_container<
    proposal_object,
    indexed_by<
       ordered_unique< tag< by_id >, member< object, object_id_type, &object::id > >,

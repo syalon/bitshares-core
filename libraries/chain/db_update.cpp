@@ -142,13 +142,14 @@ void database::update_last_irreversible_block()
 
 void database::clear_expired_transactions()
 { try {
-   //Look for expired transactions in the deduplication list, and remove them.
-   //Transactions must have expired by at least two forking windows in order to be removed.
-   auto& transaction_idx = static_cast<transaction_index&>(get_mutable_index(implementation_ids,
-                                                                             impl_transaction_history_object_type));
-   const auto& dedupe_index = transaction_idx.indices().get<by_expiration>();
-   while( (!dedupe_index.empty()) && (head_block_time() > dedupe_index.begin()->trx.expiration) )
-      transaction_idx.remove(*dedupe_index.begin());
+  //  TODO:syalon todo
+   // //Look for expired transactions in the deduplication list, and remove them.
+   // //Transactions must have expired by at least two forking windows in order to be removed.
+   // auto& transaction_idx = static_cast<transaction_index&>(get_mutable_index(implementation_ids,
+   //                                                                           impl_transaction_history_object_type));
+   // const auto& dedupe_index = transaction_idx.indices().get<by_expiration>();
+   // while( (!dedupe_index.empty()) && (head_block_time() > dedupe_index.begin()->trx.expiration) )
+   //    transaction_idx.remove(*dedupe_index.begin());
 } FC_CAPTURE_AND_RETHROW() }
 
 void database::clear_expired_proposals()
@@ -543,27 +544,28 @@ void database::update_expired_feeds()
 
 void database::update_core_exchange_rates()
 {
-   const auto& idx = get_index_type<asset_bitasset_data_index>().indices().get<by_cer_update>();
-   if( idx.begin() != idx.end() )
-   {
-      for( auto itr = idx.rbegin(); itr->need_to_update_cer(); itr = idx.rbegin() )
-      {
-         const asset_bitasset_data_object& b = *itr;
-         const asset_object& a = b.asset_id( *this );
-         if( a.options.core_exchange_rate != b.current_feed.core_exchange_rate )
-         {
-            modify( a, [&b]( asset_object& ao )
-            {
-               ao.options.core_exchange_rate = b.current_feed.core_exchange_rate;
-            });
-         }
-         modify( b, []( asset_bitasset_data_object& abdo )
-         {
-            abdo.asset_cer_updated = false;
-            abdo.feed_cer_updated = false;
-         });
-      }
-   }
+  //  TODO:syalon todo
+   // const auto& idx = get_index_type<asset_bitasset_data_index>().indices().get<by_cer_update>();
+   // if( idx.begin() != idx.end() )
+   // {
+   //    for( auto itr = idx.rbegin(); itr->need_to_update_cer(); itr = idx.rbegin() )
+   //    {
+   //       const asset_bitasset_data_object& b = *itr;
+   //       const asset_object& a = b.asset_id( *this );
+   //       if( a.options.core_exchange_rate != b.current_feed.core_exchange_rate )
+   //       {
+   //          modify( a, [&b]( asset_object& ao )
+   //          {
+   //             ao.options.core_exchange_rate = b.current_feed.core_exchange_rate;
+   //          });
+   //       }
+   //       modify( b, []( asset_bitasset_data_object& abdo )
+   //       {
+   //          abdo.asset_cer_updated = false;
+   //          abdo.feed_cer_updated = false;
+   //       });
+   //    }
+   // }
 }
 
 void database::update_maintenance_flag( bool new_maintenance_flag )

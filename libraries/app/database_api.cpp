@@ -540,17 +540,18 @@ std::map<std::string, full_account> database_api_impl::get_full_accounts( const 
          acnt.balances.emplace_back(*balance.second);
       }
 
-      // Add the account's vesting balances
-      auto vesting_range = _db.get_index_type<vesting_balance_index>().indices().get<by_account>()
-                              .equal_range(account->id);
-      for(auto itr = vesting_range.first; itr != vesting_range.second; ++itr)
-      {
-         if(acnt.vesting_balances.size() >= api_limit_get_full_accounts_lists) {
-            acnt.more_data_available.vesting_balances = true;
-            break;
-         }
-         acnt.vesting_balances.emplace_back(*itr);
-      }
+      //  TODO:syalon todo
+      // // Add the account's vesting balances
+      // auto vesting_range = _db.get_index_type<vesting_balance_index>().indices().get<by_account>()
+      //                         .equal_range(account->id);
+      // for(auto itr = vesting_range.first; itr != vesting_range.second; ++itr)
+      // {
+      //    if(acnt.vesting_balances.size() >= api_limit_get_full_accounts_lists) {
+      //       acnt.more_data_available.vesting_balances = true;
+      //       break;
+      //    }
+      //    acnt.vesting_balances.emplace_back(*itr);
+      // }
 
       // Add the account's orders
       auto order_range = _db.get_index_type<limit_order_index>().indices().get<by_account>()
@@ -797,20 +798,21 @@ vector<balance_object> database_api_impl::get_balance_objects( const vector<addr
 {
    try
    {
-      const auto& bal_idx = _db.get_index_type<balance_index>();
-      const auto& by_owner_idx = bal_idx.indices().get<by_owner>();
+    //  TODO:syalon todo
+      // const auto& bal_idx = _db.get_index_type<balance_index>();
+      // const auto& by_owner_idx = bal_idx.indices().get<by_owner>();
 
       vector<balance_object> result;
 
-      for( const auto& owner : addrs )
-      {
-         auto itr = by_owner_idx.lower_bound( boost::make_tuple( owner, asset_id_type(0) ) );
-         while( itr != by_owner_idx.end() && itr->owner == owner )
-         {
-            result.push_back( *itr );
-            ++itr;
-         }
-      }
+      // for( const auto& owner : addrs )
+      // {
+      //    auto itr = by_owner_idx.lower_bound( boost::make_tuple( owner, asset_id_type(0) ) );
+      //    while( itr != by_owner_idx.end() && itr->owner == owner )
+      //    {
+      //       result.push_back( *itr );
+      //       ++itr;
+      //    }
+      // }
       return result;
    }
    FC_CAPTURE_AND_RETHROW( (addrs) )
@@ -843,14 +845,15 @@ vector<vesting_balance_object> database_api_impl::get_vesting_balances( const st
 {
    try
    {
-      const account_id_type account_id = get_account_from_string(account_id_or_name)->id;
+    //  TODO:syalon todo
+      // const account_id_type account_id = get_account_from_string(account_id_or_name)->id;
       vector<vesting_balance_object> result;
-      auto vesting_range = _db.get_index_type<vesting_balance_index>().indices().get<by_account>()
-                              .equal_range(account_id);
-      std::for_each(vesting_range.first, vesting_range.second,
-                    [&result](const vesting_balance_object& balance) {
-                       result.emplace_back(balance);
-                    });
+      // auto vesting_range = _db.get_index_type<vesting_balance_index>().indices().get<by_account>()
+      //                         .equal_range(account_id);
+      // std::for_each(vesting_range.first, vesting_range.second,
+      //               [&result](const vesting_balance_object& balance) {
+      //                  result.emplace_back(balance);
+      //               });
       return result;
    }
    FC_CAPTURE_AND_RETHROW( (account_id_or_name) );
@@ -1472,22 +1475,23 @@ vector<market_ticker> database_api_impl::get_top_markets(uint32_t limit)const
               "limit can not be greater than ${configured_limit}",
               ("configured_limit", configured_limit) );
 
-   const auto& volume_idx = _db.get_index_type<market_ticker_index>().indices().get<by_volume>();
-   auto itr = volume_idx.rbegin();
+   // TODO:syalon todo
+   // const auto& volume_idx = _db.get_index_type<market_ticker_index>().indices().get<by_volume>();
+   // auto itr = volume_idx.rbegin();
    vector<market_ticker> result;
-   result.reserve(limit);
-   const fc::time_point_sec now = _db.head_block_time();
+   // result.reserve(limit);
+   // const fc::time_point_sec now = _db.head_block_time();
 
-   while( itr != volume_idx.rend() && result.size() < limit)
-   {
-      const asset_object base = itr->base(_db);
-      const asset_object quote = itr->quote(_db);
-      order_book orders;
-      orders = get_order_book(base.symbol, quote.symbol, 1);
+   // while( itr != volume_idx.rend() && result.size() < limit)
+   // {
+   //    const asset_object base = itr->base(_db);
+   //    const asset_object quote = itr->quote(_db);
+   //    order_book orders;
+   //    orders = get_order_book(base.symbol, quote.symbol, 1);
 
-      result.emplace_back(market_ticker(*itr, now, base, quote, orders));
-      ++itr;
-   }
+   //    result.emplace_back(market_ticker(*itr, now, base, quote, orders));
+   //    ++itr;
+   // }
    return result;
 }
 
@@ -1907,14 +1911,15 @@ vector<worker_object> database_api_impl::get_all_workers( const optional<bool> i
    }
    else // query for workers that are expired only or not expired only
    {
-      const time_point_sec now = _db.head_block_time();
-      const auto& workers_idx = _db.get_index_type<worker_index>().indices().get<by_end_date>();
-      auto itr = *is_expired ? workers_idx.begin() : workers_idx.lower_bound( now );
-      auto end = *is_expired ? workers_idx.upper_bound( now ) : workers_idx.end();
-      for( ; itr != end; ++itr )
-      {
-         result.push_back( *itr );
-      }
+    //  TODO:syalon todo
+      // const time_point_sec now = _db.head_block_time();
+      // const auto& workers_idx = _db.get_index_type<worker_index>().indices().get<by_end_date>();
+      // auto itr = *is_expired ? workers_idx.begin() : workers_idx.lower_bound( now );
+      // auto end = *is_expired ? workers_idx.upper_bound( now ) : workers_idx.end();
+      // for( ; itr != end; ++itr )
+      // {
+      //    result.push_back( *itr );
+      // }
    }
 
    return result;
@@ -1928,14 +1933,15 @@ vector<worker_object> database_api::get_workers_by_account(const std::string acc
 vector<worker_object> database_api_impl::get_workers_by_account(const std::string account_id_or_name)const
 {
    vector<worker_object> result;
-   const auto& workers_idx = _db.get_index_type<worker_index>().indices().get<by_account>();
+   // TODO:syalon todo
+   // const auto& workers_idx = _db.get_index_type<worker_index>().indices().get<by_account>();
 
-   const account_id_type account = get_account_from_string(account_id_or_name)->id;
-   auto range = workers_idx.equal_range(account);
-   for(auto itr = range.first; itr != range.second; ++itr)
-   {
-      result.push_back( *itr );
-   }
+   // const account_id_type account = get_account_from_string(account_id_or_name)->id;
+   // auto range = workers_idx.equal_range(account);
+   // for(auto itr = range.first; itr != range.second; ++itr)
+   // {
+   //    result.push_back( *itr );
+   // }
    return result;
 }
 

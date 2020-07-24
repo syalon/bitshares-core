@@ -244,13 +244,14 @@ void account_history_plugin_impl::add_account_history( const account_id_type acc
          // remove the operation history entry (1.11.x) if configured and no reference left
          if( _partial_operations )
          {
+            // TODO:syalon todo
             // check for references
-            const auto& by_opid_idx = his_idx.indices().get<by_opid>();
-            if( by_opid_idx.find( remove_op_id ) == by_opid_idx.end() )
-            {
-               // if no reference, remove
-               db.remove( remove_op_id(db) );
-            }
+            // const auto& by_opid_idx = his_idx.indices().get<by_opid>();
+            // if( by_opid_idx.find( remove_op_id ) == by_opid_idx.end() )
+            // {
+            //    // if no reference, remove
+            //    db.remove( remove_op_id(db) );
+            // }
          }
       }
    }

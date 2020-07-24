@@ -199,8 +199,9 @@ typedef multi_index_container<
    market_ticker_object,
    indexed_by<
       ordered_unique< tag<by_id>, member< object, object_id_type, &object::id > >,
-      ordered_non_unique< tag<by_volume>,
-                          member< market_ticker_object, fc::uint128_t, &market_ticker_object::base_volume > >,
+      //  TODO:syalon non unique key
+      // ordered_non_unique< tag<by_volume>,
+      //                     member< market_ticker_object, fc::uint128_t, &market_ticker_object::base_volume > >,
       ordered_unique<
          tag<by_market>,
          composite_key<

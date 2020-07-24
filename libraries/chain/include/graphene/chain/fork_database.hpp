@@ -24,9 +24,6 @@
 #pragma once
 
 #include <graphene/protocol/block.hpp>
-
-#include <graphene/chain/types.hpp>
-
 #include <boost/multi_index_container.hpp>
 #include <boost/multi_index/member.hpp>
 #include <boost/multi_index/ordered_index.hpp>
@@ -34,9 +31,7 @@
 #include <boost/multi_index/mem_fun.hpp>
 
 namespace graphene { namespace chain {
-   using boost::multi_index_container;
-   using namespace boost::multi_index;
-
+  
    struct fork_item
    {
       fork_item( signed_block d )
@@ -100,11 +95,11 @@ namespace graphene { namespace chain {
 
          struct block_id;
          struct block_num;
-         typedef multi_index_container<
+         typedef boost::multi_index_container<
             item_ptr,
-            indexed_by<
-               hashed_unique<tag<block_id>, member<fork_item, block_id_type, &fork_item::id>, std::hash<fc::ripemd160>>,
-               ordered_non_unique<tag<block_num>, member<fork_item,uint32_t,&fork_item::num>>
+            boost::multi_index::indexed_by<
+               boost::multi_index::hashed_unique<boost::multi_index::tag<block_id>, boost::multi_index::member<fork_item, block_id_type, &fork_item::id>, std::hash<fc::ripemd160>>,
+               boost::multi_index::ordered_non_unique<boost::multi_index::tag<block_num>, boost::multi_index::member<fork_item,uint32_t,&fork_item::num>>
             >
          > fork_multi_index_type;
 

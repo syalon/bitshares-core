@@ -4880,13 +4880,14 @@ BOOST_AUTO_TEST_CASE(custom_auths) { try {
          PUSH_TX(db, trx);
 
 
+         // TODO:syalont todo
          //////
          // Advance the blockchain to before withdrawal of vesting balance can start
          //////
          generate_blocks(1);
          set_expiration(db, trx);
-         vesting_balance_id_type vesting_balance_id =
-                 db.get_index_type<vesting_balance_index>().indices().get<by_account>().find(alice.get_id())->id;
+         // vesting_balance_id_type vesting_balance_id =
+         //         db.get_index_type<vesting_balance_index>().indices().get<by_account>().find(alice.get_id())->id;
 
 
          //////
@@ -4897,7 +4898,7 @@ BOOST_AUTO_TEST_CASE(custom_auths) { try {
             asset partial_amount = asset(10000);
 
             vesting_balance_withdraw_operation vb_op;
-            vb_op.vesting_balance = vesting_balance_id;
+            // vb_op.vesting_balance = vesting_balance_id;
             vb_op.owner = alice_id;
             vb_op.amount = partial_amount;
             vb_op.fee = db.current_fee_schedule().calculate_fee(vb_op);

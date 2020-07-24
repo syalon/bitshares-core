@@ -26,6 +26,7 @@
 #include <fc/thread/mutex.hpp>
 
 #include <graphene/app/api.hpp>
+#include <graphene/chain/types.hpp>
 
 #include <graphene/wallet/api_documentation.hpp>
 #include <graphene/wallet/wallet_structs.hpp>
@@ -462,24 +463,25 @@ private:
       graphene::chain::transaction_id_type transaction_id;
    };
    struct timestamp_index{};
-   typedef boost::multi_index_container<
+   typedef multi_index_container<
          recently_generated_transaction_record,
-         boost::multi_index::indexed_by<
+         indexed_by<
             boost::multi_index::hashed_unique<
-               boost::multi_index::member<
+               member<
                   recently_generated_transaction_record,
                   graphene::chain::transaction_id_type,
                   &recently_generated_transaction_record::transaction_id
                >,
                std::hash<graphene::chain::transaction_id_type>
-            >,
-            boost::multi_index::ordered_non_unique<
-               boost::multi_index::tag<timestamp_index>,
-               boost::multi_index::member<
-                  recently_generated_transaction_record,
-                  fc::time_point_sec,
-                  &recently_generated_transaction_record::generation_time
             >
+            // TODO:syalon non unique key
+            // ordered_non_unique<
+            //    tag<timestamp_index>,
+            //    member<
+            //       recently_generated_transaction_record,
+            //       fc::time_point_sec,
+            //       &recently_generated_transaction_record::generation_time
+            // >
          >
        >
      > recently_generated_transaction_set_type;

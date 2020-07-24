@@ -42,7 +42,9 @@ namespace graphene { namespace db {
          FC_ASSERT( i >> 48 == 0, "instance overflow", ("instance",i) );
          number = (uint64_t(s)<<56) | (uint64_t(t)<<48) | i;
       }
-      object_id_type(){ number = 0; }
+      //  TODO:syalon modifyed!!!
+      // object_id_type(){ number = 0; }
+      object_id_type( uint64_t i = 0 ):number(i){}
 
       uint8_t  space()const       { return number >> 56;              }
       uint8_t  type()const        { return number >> 48 & 0x00ff;     }

@@ -255,15 +255,17 @@ namespace detail {
       vesting_balance_object,
       indexed_by<
          ordered_unique< tag<by_id>, member< object, object_id_type, &object::id >
-         >,
-         ordered_non_unique< tag<by_account>,
-            member<vesting_balance_object, account_id_type, &vesting_balance_object::owner>
-         >,
-         hashed_unique< tag<by_vesting_type>,
-            identity<vesting_balance_object>,
-            detail::vesting_balance_object_hash,
-            detail::vesting_balance_object_equal
          >
+         // TODO:syalon non unique key
+         // ordered_non_unique< tag<by_account>,
+         //    member<vesting_balance_object, account_id_type, &vesting_balance_object::owner>
+         // >,
+         // TODO:syalon hashed_unique to ordered_unique
+         // ordered_unique< tag<by_vesting_type>,
+         //    identity<vesting_balance_object>,
+         //    detail::vesting_balance_object_hash,
+         //    detail::vesting_balance_object_equal
+         // >
       >
    > vesting_balance_multi_index_type;
    /**

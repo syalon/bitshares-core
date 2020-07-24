@@ -5,6 +5,7 @@
 #include <fc/log/logger.hpp>
 #include <fc/network/tcp_socket.hpp>
 #include <graphene/chain/config.hpp>
+#include <graphene/chain/types.hpp>
 #include <graphene/protocol/types.hpp>
 #include <graphene/net/node.hpp>
 #include <graphene/net/core_messages.hpp>
@@ -323,10 +324,10 @@ class node_impl : public peer_connection_delegate
       fc::future<void>       _fetch_item_loop_done;
 
       struct item_id_index{};
-      typedef boost::multi_index_container<prioritized_item_id,
-                                           boost::multi_index::indexed_by<boost::multi_index::ordered_unique<boost::multi_index::identity<prioritized_item_id> >,
-                                                                          boost::multi_index::hashed_unique<boost::multi_index::tag<item_id_index>,
-                                                                                                            boost::multi_index::member<prioritized_item_id, item_id, &prioritized_item_id::item>,
+      typedef multi_index_container<prioritized_item_id,
+                                           indexed_by<ordered_unique<identity<prioritized_item_id> >,
+                                                                          boost::multi_index::hashed_unique<tag<item_id_index>,
+                                                                                                            member<prioritized_item_id, item_id, &prioritized_item_id::item>,
                                                                                                             std::hash<item_id> > >
                                            > items_to_fetch_set_type;
       unsigned _items_to_fetch_sequence_counter;

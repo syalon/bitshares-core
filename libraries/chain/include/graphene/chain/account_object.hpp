@@ -377,8 +377,12 @@ namespace graphene { namespace chain {
       account_balance_object,
       indexed_by<
          ordered_unique< tag<by_id>, member< object, object_id_type, &object::id > >,
-         ordered_non_unique< tag<by_maintenance_flag>,
-                             member< account_balance_object, bool, &account_balance_object::maintenance_flag > >,
+         ordered_unique< tag<by_maintenance_flag>,
+            composite_key< account_balance_object,
+                member< account_balance_object, bool, &account_balance_object::maintenance_flag >,
+                member< object, object_id_type, &object::id >
+            >
+         >,
          ordered_unique< tag<by_asset_balance>,
             composite_key<
                account_balance_object,

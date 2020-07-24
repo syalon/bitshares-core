@@ -77,23 +77,22 @@ template<class Type>
 void database::perform_account_maintenance(Type tally_helper)
 {
    const auto& bal_idx = get_index_type< account_balance_index >().indices().get< by_maintenance_flag >();
-   if( bal_idx.begin() != bal_idx.end() )
+
+   // TODO:syalon modifyed
+   auto itr = bal_idx.lower_bound( true /** maintenance_flag */ );
+   while( itr != bal_idx.end() )
    {
-      auto bal_itr = bal_idx.rbegin();
-      while( bal_itr->maintenance_flag )
-      {
-         const account_balance_object& bal_obj = *bal_itr;
+      const account_balance_object& bal_obj = *itr;
 
-         modify( get_account_stats_by_owner( bal_obj.owner ), [&bal_obj](account_statistics_object& aso) {
-            aso.core_in_balance = bal_obj.balance;
-         });
+      modify( get_account_stats_by_owner( bal_obj.owner ), [&bal_obj](account_statistics_object& aso) {
+         aso.core_in_balance = bal_obj.balance;
+      });
 
-         modify( bal_obj, []( account_balance_object& abo ) {
-            abo.maintenance_flag = false;
-         });
+      modify( bal_obj, []( account_balance_object& abo ) {
+         abo.maintenance_flag = false;
+      });
 
-         bal_itr = bal_idx.rbegin();
-      }
+      ++itr;
    }
 
    const auto& stats_idx = get_index_type< account_stats_index >().indices().get< by_maintenance_seq >();
@@ -135,19 +134,20 @@ struct worker_pay_visitor
 
 void database::update_worker_votes()
 {
-   const auto& idx = get_index_type<worker_index>().indices().get<by_account>();
-   auto itr = idx.begin();
-   auto itr_end = idx.end();
-   bool allow_negative_votes = (head_block_time() < HARDFORK_607_TIME);
-   while( itr != itr_end )
-   {
-      modify( *itr, [this,allow_negative_votes]( worker_object& obj )
-      {
-         obj.total_votes_for = _vote_tally_buffer[obj.vote_for];
-         obj.total_votes_against = allow_negative_votes ? _vote_tally_buffer[obj.vote_against] : 0;
-      });
-      ++itr;
-   }
+   // TODO:syalon todo
+   // const auto& idx = get_index_type<worker_index>().indices().get<by_account>();
+   // auto itr = idx.begin();
+   // auto itr_end = idx.end();
+   // bool allow_negative_votes = (head_block_time() < HARDFORK_607_TIME);
+   // while( itr != itr_end )
+   // {
+   //    modify( *itr, [this,allow_negative_votes]( worker_object& obj )
+   //    {
+   //       obj.total_votes_for = _vote_tally_buffer[obj.vote_for];
+   //       obj.total_votes_against = allow_negative_votes ? _vote_tally_buffer[obj.vote_against] : 0;
+   //    });
+   //    ++itr;
+   // }
 }
 
 void database::pay_workers( share_type& budget )

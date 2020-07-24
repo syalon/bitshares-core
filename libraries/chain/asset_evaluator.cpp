@@ -469,24 +469,25 @@ void_result asset_update_evaluator::do_evaluate(const asset_update_operation& o)
 
    if( o.extensions.value.new_precision.valid() )
    {
-      FC_ASSERT( *o.extensions.value.new_precision != a.precision,
-                 "Specified a new precision but it does not change" );
+      //  TODO:syalon todo
+      // FC_ASSERT( *o.extensions.value.new_precision != a.precision,
+      //            "Specified a new precision but it does not change" );
 
-      if( a.is_market_issued() )
-      {
-         if( !bitasset_data )
-            bitasset_data = &asset_to_update->bitasset_data(d);
-         FC_ASSERT( !bitasset_data->is_prediction_market, "Can not update precision of a prediction market" );
-      }
+      // if( a.is_market_issued() )
+      // {
+      //    if( !bitasset_data )
+      //       bitasset_data = &asset_to_update->bitasset_data(d);
+      //    FC_ASSERT( !bitasset_data->is_prediction_market, "Can not update precision of a prediction market" );
+      // }
 
-      // If any other asset is backed by this asset, this asset's precision can't be updated
-      const auto& idx = d.get_index_type<graphene::chain::asset_bitasset_data_index>()
-                         .indices().get<by_short_backing_asset>();
-      auto itr = idx.lower_bound( o.asset_to_update );
-      bool backing_another_asset = ( itr != idx.end() && itr->options.short_backing_asset == o.asset_to_update );
-      FC_ASSERT( !backing_another_asset,
-                 "Asset ${a} is backed by this asset, can not update precision",
-                 ("a",itr->asset_id) );
+      // // If any other asset is backed by this asset, this asset's precision can't be updated
+      // const auto& idx = d.get_index_type<graphene::chain::asset_bitasset_data_index>()
+      //                    .indices().get<by_short_backing_asset>();
+      // auto itr = idx.lower_bound( o.asset_to_update );
+      // bool backing_another_asset = ( itr != idx.end() && itr->options.short_backing_asset == o.asset_to_update );
+      // FC_ASSERT( !backing_another_asset,
+      //            "Asset ${a} is backed by this asset, can not update precision",
+      //            ("a",itr->asset_id) );
    }
 
    const auto& chain_parameters = d.get_global_properties().parameters;
@@ -592,24 +593,25 @@ void check_children_of_bitasset(const database& d, const asset_update_bitasset_o
    if ( new_backing_asset.get_id() == asset_id_type() )
       return;
 
-   // loop through all assets that have this asset as a backing asset
-   const auto& idx = d.get_index_type<graphene::chain::asset_bitasset_data_index>()
-         .indices()
-         .get<by_short_backing_asset>();
-   auto backed_range = idx.equal_range(op.asset_to_update);
-   std::for_each( backed_range.first, backed_range.second,
-         [&new_backing_asset, &d, &op](const asset_bitasset_data_object& bitasset_data)
-         {
-            const auto& child = bitasset_data.asset_id(d);
-            FC_ASSERT( child.get_id() != op.new_options.short_backing_asset,
-                  "A BitAsset would be invalidated by changing this backing asset ('A' backed by 'B' backed by 'A')." );
+    //  TODO:syalon todo
+   // // loop through all assets that have this asset as a backing asset
+   // const auto& idx = d.get_index_type<graphene::chain::asset_bitasset_data_index>()
+   //       .indices()
+   //       .get<by_short_backing_asset>();
+   // auto backed_range = idx.equal_range(op.asset_to_update);
+   // std::for_each( backed_range.first, backed_range.second,
+   //       [&new_backing_asset, &d, &op](const asset_bitasset_data_object& bitasset_data)
+   //       {
+   //          const auto& child = bitasset_data.asset_id(d);
+   //          FC_ASSERT( child.get_id() != op.new_options.short_backing_asset,
+   //                "A BitAsset would be invalidated by changing this backing asset ('A' backed by 'B' backed by 'A')." );
 
-            FC_ASSERT( child.issuer != GRAPHENE_COMMITTEE_ACCOUNT,
-                  "A blockchain-controlled market asset would be invalidated by changing this backing asset." );
+   //          FC_ASSERT( child.issuer != GRAPHENE_COMMITTEE_ACCOUNT,
+   //                "A blockchain-controlled market asset would be invalidated by changing this backing asset." );
 
-            FC_ASSERT( !new_backing_asset.is_market_issued(),
-                  "A non-blockchain controlled BitAsset would be invalidated by changing this backing asset.");
-         } ); // end of lambda and std::for_each()
+   //          FC_ASSERT( !new_backing_asset.is_market_issued(),
+   //                "A non-blockchain controlled BitAsset would be invalidated by changing this backing asset.");
+   //       } ); // end of lambda and std::for_each()
 } // check_children_of_bitasset
 
 void_result asset_update_bitasset_evaluator::do_evaluate(const asset_update_bitasset_operation& op)
