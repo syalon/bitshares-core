@@ -95,12 +95,12 @@ namespace graphene { namespace chain {
          time_point_sec last_vote_time; ///< last time voted
 
          /// Voting Power Stats
-         uint64_t vp_full = 0;         ///<  all voting power.
-         uint64_t vp_proxy = 0;        ///<  the voting power of the proxy, if there is no attenuation, it is equal to vp_full.
-         // TODO:4.0 以下几个可以根据 vp_proxy 计算。考虑移除。不过先计算在求和 和 先求和在计算估计有细微误差。
-         uint64_t vp_committee = 0;    ///<  the final voting power for the committees.
-         uint64_t vp_witness = 0;      ///<  the final voting power for the witnesses.
-         uint64_t vp_worker = 0;       ///<  the final voting power for the workers.
+         uint64_t vp_all = 0;           ///<  all voting power.
+         uint64_t vp_active = 0;        ///<  the voting power of the proxy, if there is no attenuation, it is equal to vp_all.
+         // TODO:4.0 以下几个可以根据 vp_active 计算。考虑移除。不过先计算在求和 和 先求和在计算估计有细微误差。
+         uint64_t vp_committee = 0;     ///<  the final voting power for the committees.
+         uint64_t vp_witness = 0;       ///<  the final voting power for the witnesses.
+         uint64_t vp_worker = 0;        ///<  the final voting power for the workers.
          time_point_sec vote_tally_time;
 
          /// Whether this account owns some CORE asset and is voting
@@ -434,7 +434,7 @@ namespace graphene { namespace chain {
    typedef generic_index<account_object, account_multi_index_type> account_index;
 
    struct by_maintenance_seq;
-   struct by_voting_power_proxy;
+   struct by_voting_power_active;
    
    /**
     * @ingroup object_index
@@ -450,11 +450,11 @@ namespace graphene { namespace chain {
                member<account_statistics_object, string, &account_statistics_object::name>
             >
          >,
-         ordered_non_unique< tag<by_voting_power_proxy>,
+         ordered_non_unique< tag<by_voting_power_active>,
             composite_key<
                account_statistics_object,
                member<account_statistics_object, time_point_sec, &account_statistics_object::vote_tally_time>,
-               member<account_statistics_object, uint64_t, &account_statistics_object::vp_proxy>
+               member<account_statistics_object, uint64_t, &account_statistics_object::vp_active>
             >,
             composite_key_compare<
                std::greater< time_point_sec >,

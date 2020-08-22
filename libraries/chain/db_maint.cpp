@@ -1228,8 +1228,8 @@ void database::perform_chain_maintenance(const signed_block& next_block, const g
                   + stats.core_in_balance.value;
 
             // voting power stats
-            uint64_t vp_full = 0;      ///<  all voting power.
-            uint64_t vp_proxy = 0;     ///<  the voting power of the proxy, if there is no attenuation, it is equal to vp_full.
+            uint64_t vp_all = 0;       ///<  all voting power.
+            uint64_t vp_active = 0;    ///<  the voting power of the proxy, if there is no attenuation, it is equal to vp_all.
             uint64_t vp_committee = 0; ///<  the final voting power for the committees.
             uint64_t vp_witness = 0;   ///<  the final voting power for the witnesses.
             uint64_t vp_worker = 0;    ///<  the final voting power for the workers.
@@ -1291,14 +1291,14 @@ void database::perform_chain_maintenance(const signed_block& next_block, const g
                voting_stake[0] = voting_stake[2];
                voting_stake[1] = voting_stake[2];
                num_committee_voting_stake = voting_stake[2];
-               vp_full = vp_proxy = vp_committee = vp_witness = vp_worker = voting_stake[2];
+               vp_all = vp_active = vp_committee = vp_witness = vp_worker = voting_stake[2];
             }
             else
             {
-               vp_full = voting_stake[2];
+               vp_all = vp_active = voting_stake[2];
                if( !directly_voting )
                {
-                  vp_proxy = voting_stake[2] = detail::vote_recalc_options::delegator().get_recalced_voting_stake( 
+                  vp_active = voting_stake[2] = detail::vote_recalc_options::delegator().get_recalced_voting_stake( 
                      voting_stake[2], stats.last_vote_time, *delegator_recalc_times );
                }
                vp_witness = voting_stake[1] = detail::vote_recalc_options::witness().get_recalced_voting_stake( 
@@ -1316,8 +1316,8 @@ void database::perform_chain_maintenance(const signed_block& next_block, const g
             d.modify( opinion_account_stats, [=]( account_statistics_object& update_stats ) {
                if (update_stats.vote_tally_time != now)
                {
-                  update_stats.vp_full = vp_full;
-                  update_stats.vp_proxy = vp_proxy;
+                  update_stats.vp_all = vp_all;
+                  update_stats.vp_active = vp_active;
                   update_stats.vp_committee = vp_committee;
                   update_stats.vp_witness = vp_witness;
                   update_stats.vp_worker = vp_worker;
@@ -1325,8 +1325,8 @@ void database::perform_chain_maintenance(const signed_block& next_block, const g
                }
                else
                {
-                  update_stats.vp_full += vp_full;
-                  update_stats.vp_proxy += vp_proxy;
+                  update_stats.vp_all += vp_all;
+                  update_stats.vp_active += vp_active;
                   update_stats.vp_committee += vp_committee;
                   update_stats.vp_witness += vp_witness;
                   update_stats.vp_worker += vp_worker;
