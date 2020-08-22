@@ -280,6 +280,11 @@ class database_api
                                                        optional<bool> subscribe = optional<bool>() );
 
       /**
+       *    TODO: comments....
+       */
+      vector<account_object_with_statistics> get_account_followers(const std::string account_name_or_id, uint32_t limit)const;
+
+      /**
        * @brief Get info of an account by name
        * @param name Name of the account to retrieve
        * @return The account holding the provided name
@@ -948,6 +953,7 @@ FC_API(graphene::app::database_api,
    (get_account_id_from_string)
    (get_accounts)
    (get_full_accounts)
+   (get_account_followers)
    (get_account_by_name)
    (get_account_references)
    (lookup_account_names)

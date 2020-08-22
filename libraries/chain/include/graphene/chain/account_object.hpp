@@ -94,6 +94,15 @@ namespace graphene { namespace chain {
 
          time_point_sec last_vote_time; ///< last time voted
 
+         /// Voting Power Stats
+         uint64_t vp_full = 0;         ///<  all voting power.
+         uint64_t vp_proxy = 0;        ///<  the voting power of the proxy, if there is no attenuation, it is equal to vp_full.
+         // TODO:4.0 以下几个可以根据 vp_proxy 计算。考虑移除。不过先计算在求和 和 先求和在计算估计有细微误差。
+         uint64_t vp_committee = 0;    ///<  the final voting power for the committees.
+         uint64_t vp_witness = 0;      ///<  the final voting power for the witnesses.
+         uint64_t vp_worker = 0;       ///<  the final voting power for the workers.
+         time_point_sec vote_tally_time;
+
          /// Whether this account owns some CORE asset and is voting
          inline bool has_some_core_voting() const
          {
@@ -311,6 +320,8 @@ namespace graphene { namespace chain {
             return !is_basic_account(now);
          }
 
+         account_id_type get_voting_account()const { return options.voting_account; }
+
          account_id_type get_id()const { return id; }
    };
 
@@ -402,6 +413,7 @@ namespace graphene { namespace chain {
    typedef generic_index<account_balance_object, account_balance_object_multi_index_type> account_balance_index;
 
    struct by_name;
+   struct by_voting_account;
 
    /**
     * @ingroup object_index
@@ -411,6 +423,8 @@ namespace graphene { namespace chain {
       indexed_by<
          ordered_unique< tag<by_id>, member< object, object_id_type, &object::id > >,
          ordered_unique< tag<by_name>, member<account_object, string, &account_object::name> >
+         // rdered_unique< tag<by_voting_account>, member<account_object, string, &account_object::name> >
+         // ordered_non_unique< tag<by_voting_account>, const_mem_fun< account_object, account_id_type, &account_object::get_voting_account > >
       >
    > account_multi_index_type;
 
@@ -420,7 +434,8 @@ namespace graphene { namespace chain {
    typedef generic_index<account_object, account_multi_index_type> account_index;
 
    struct by_maintenance_seq;
-
+   struct by_voting_power_proxy;
+   
    /**
     * @ingroup object_index
     */
@@ -433,6 +448,17 @@ namespace graphene { namespace chain {
                account_statistics_object,
                const_mem_fun<account_statistics_object, bool, &account_statistics_object::need_maintenance>,
                member<account_statistics_object, string, &account_statistics_object::name>
+            >
+         >,
+         ordered_non_unique< tag<by_voting_power_proxy>,
+            composite_key<
+               account_statistics_object,
+               member<account_statistics_object, time_point_sec, &account_statistics_object::vote_tally_time>,
+               member<account_statistics_object, uint64_t, &account_statistics_object::vp_proxy>
+            >,
+            composite_key_compare<
+               std::greater< time_point_sec >,
+               std::greater< uint64_t >
             >
          >
       >

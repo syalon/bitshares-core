@@ -461,6 +461,11 @@ std::map<string,full_account> database_api::get_full_accounts( const vector<stri
    return my->get_full_accounts( names_or_ids, subscribe );
 }
 
+vector<account_object_with_statistics> database_api::get_account_followers(const std::string account_name_or_id, uint32_t limit)const
+{
+  return my->get_account_followers( account_name_or_id, limit );
+}
+
 std::map<std::string, full_account> database_api_impl::get_full_accounts( const vector<std::string>& names_or_ids,
                                                                           optional<bool> subscribe )
 {
@@ -638,6 +643,35 @@ std::map<std::string, full_account> database_api_impl::get_full_accounts( const 
       results[account_name_or_id] = acnt;
    }
    return results;
+}
+
+vector<account_object_with_statistics> database_api_impl::get_account_followers(const std::string account_name_or_id, uint32_t limit)const
+{
+   vector<account_object_with_statistics> result;
+
+   const account_object *account = get_account_from_string(account_name_or_id, false);
+   if (account == nullptr)
+      return result;
+
+   if (account->get_id() == GRAPHENE_PROXY_TO_SELF_ACCOUNT)
+      return result;
+
+  //  TODO:   
+   // const auto& idx = _db.get_index_type<account_index>().indices().get<by_voting_account>();
+   
+   // for( auto account_iter = idx.lower_bound(account->id); account_iter != idx.end() && result.size() < limit; ++account_iter )
+   // {
+   //    account_object_with_statistics obj;
+   //    obj.account = *account_iter;
+   //    obj.statistics = account_iter->statistics(db);
+
+   //    // account_object_with_statistics obj = account_object_with_statistics( *account_iter );
+   //    // obj.ext_statistics_object = account_iter->statistics(db);
+
+   //    result.emplace_back(*obj);
+   // }
+
+   return result;
 }
 
 optional<account_object> database_api::get_account_by_name( string name )const
