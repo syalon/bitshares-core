@@ -96,12 +96,11 @@ namespace graphene { namespace chain {
 
          /// Voting Power Stats
          uint64_t vp_all = 0;           ///<  all voting power.
-         uint64_t vp_active = 0;        ///<  the voting power of the proxy, if there is no attenuation, it is equal to vp_all.
-         // TODO:4.0 以下几个可以根据 vp_active 计算。考虑移除。不过先计算在求和 和 先求和在计算估计有细微误差。
+         uint64_t vp_active = 0;        ///<  active voting power, if there is no attenuation, it is equal to vp_all.
          uint64_t vp_committee = 0;     ///<  the final voting power for the committees.
          uint64_t vp_witness = 0;       ///<  the final voting power for the witnesses.
          uint64_t vp_worker = 0;        ///<  the final voting power for the workers.
-         time_point_sec vote_tally_time;
+         time_point_sec vote_tally_time;///<  timestamp of the last count of votes. if there is no statistics, the date is less than `_db.get_dynamic_global_properties().last_vote_tally_time`.
 
          /// Whether this account owns some CORE asset and is voting
          inline bool has_some_core_voting() const
@@ -423,7 +422,6 @@ namespace graphene { namespace chain {
       indexed_by<
          ordered_unique< tag<by_id>, member< object, object_id_type, &object::id > >,
          ordered_unique< tag<by_name>, member<account_object, string, &account_object::name> >
-         // rdered_unique< tag<by_voting_account>, member<account_object, string, &account_object::name> >
          // ordered_non_unique< tag<by_voting_account>, const_mem_fun< account_object, account_id_type, &account_object::get_voting_account > >
       >
    > account_multi_index_type;

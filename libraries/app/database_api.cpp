@@ -461,9 +461,9 @@ std::map<string,full_account> database_api::get_full_accounts( const vector<stri
    return my->get_full_accounts( names_or_ids, subscribe );
 }
 
-vector<account_object_with_statistics> database_api::get_account_followers(const std::string account_name_or_id, uint32_t limit)const
+vector<account_statistics_object> database_api::get_top_voting_power_accounts(uint32_t limit)const
 {
-  return my->get_account_followers( account_name_or_id, limit );
+   return my->get_top_voting_power_accounts( limit );
 }
 
 std::map<std::string, full_account> database_api_impl::get_full_accounts( const vector<std::string>& names_or_ids,
@@ -645,31 +645,17 @@ std::map<std::string, full_account> database_api_impl::get_full_accounts( const 
    return results;
 }
 
-vector<account_object_with_statistics> database_api_impl::get_account_followers(const std::string account_name_or_id, uint32_t limit)const
+vector<account_statistics_object> database_api_impl::get_top_voting_power_accounts(uint32_t limit)const
 {
-   vector<account_object_with_statistics> result;
+   vector<account_statistics_object> result;
 
-   const account_object *account = get_account_from_string(account_name_or_id, false);
-   if (account == nullptr)
-      return result;
+   auto last_vote_tally_time = _db.get_dynamic_global_properties().last_vote_tally_time;
+   const auto& idx = _db.get_index_type<account_stats_index>().indices().get<by_voting_power_active>();
 
-   if (account->get_id() == GRAPHENE_PROXY_TO_SELF_ACCOUNT)
-      return result;
-
-  //  TODO:   
-   // const auto& idx = _db.get_index_type<account_index>().indices().get<by_voting_account>();
-   
-   // for( auto account_iter = idx.lower_bound(account->id); account_iter != idx.end() && result.size() < limit; ++account_iter )
-   // {
-   //    account_object_with_statistics obj;
-   //    obj.account = *account_iter;
-   //    obj.statistics = account_iter->statistics(db);
-
-   //    // account_object_with_statistics obj = account_object_with_statistics( *account_iter );
-   //    // obj.ext_statistics_object = account_iter->statistics(db);
-
-   //    result.emplace_back(*obj);
-   // }
+   for(auto itr = idx.begin(); result.size() < limit && itr != idx.end() && itr->vote_tally_time >= last_vote_tally_time; ++itr)
+   {
+      result.emplace_back(*itr);
+   }
 
    return result;
 }
